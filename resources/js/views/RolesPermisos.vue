@@ -23,8 +23,8 @@
                     
                         <tr>
                         
-                            <th>IDs</th>
-                            <th>ROL</th>
+                            <th>ID</th>
+                            <th>ROLes</th>
                             <th>FECHA DE REGISTRO</th>
                             <th>PERMISOS</th>
                             <th>ACCIONES</th>
