@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CompaniasController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RolesController;
@@ -25,3 +26,7 @@ Route::post('/registrousr', [UsuariosController::class, 'store']);
 Route::put('/actualizarusr', [UsuariosController::class, 'update']);
 
 Route::delete('/usrdelete', [UsuariosController::class, 'destroy']);
+
+////////////////COMPANIAS////////////////////
+
+Route::get('/companias', [CompaniasController::class, 'index']);

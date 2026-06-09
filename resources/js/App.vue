@@ -179,6 +179,20 @@ function toggleTheme() {
                 </router-link>
 
                 <router-link
+                    to="/companias"
+                    class="menu-item"
+                >
+                    <span class="icon"><i class="fa-solid fa-gear"></i></span>
+
+                    <span
+                        v-if="sidebarOpen"
+                        class="label"
+                    >
+                        Companias
+                    </span>
+                </router-link>
+
+                <router-link
                     to="/rolespermisos"
                     class="menu-item"
                 >
