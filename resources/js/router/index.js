@@ -5,33 +5,46 @@ import Categorias from '../views/Categorias.vue'
 import RolesPermisos from '../views/RolesPermisos.vue'
 import Usuarios from '../views/Usuarios.vue'
 import Companias from '../views/Companias.vue'
+import Login from '../views/Login.vue'
+import Menu from '../menu/sidebarmenu.vue'
 
 const routes = [
     {
-        path: '/inicio',
-        component: Inicio
+        path: '/',
+        component: Login,
     },
+
     {
-        path: '/categorias',
-        component: Categorias
+        path: '/',
+        component: Menu,
+        children: [
+            {
+                path: 'inicio',
+                component: Inicio,
+            },
+            {
+                path: 'categorias',
+                component: Categorias,
+            },
+            {
+                path: 'rolespermisos',
+                component: RolesPermisos,
+            },
+            {
+                path: 'usuarios',
+                component: Usuarios,
+            },
+            {
+                path: 'companias',
+                component: Companias,
+            },
+        ],
     },
-    {
-        path: '/rolespermisos',
-        component: RolesPermisos
-    },
-    {
-        path: '/usuarios',
-        component: Usuarios
-    },
-    {
-        path: '/companias',
-        component: Companias
-    }
 ]
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
 })
 
 export default router
