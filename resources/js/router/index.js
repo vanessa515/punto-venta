@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Inicio from '../views/Inicio.vue'
 import Categorias from '../views/Categorias.vue'
 import RolesPermisos from '../views/RolesPermisos.vue'
-
+import Usuarios from '../views/Usuarios.vue'
+import Companias from '../views/Companias.vue'
 
 const routes = [
     {
@@ -17,6 +18,14 @@ const routes = [
     {
         path: '/rolespermisos',
         component: RolesPermisos
+    },
+    {
+        path: '/usuarios',
+        component: Usuarios
+    },
+    {
+        path: '/companias',
+        component: Companias
     }
 ]
 

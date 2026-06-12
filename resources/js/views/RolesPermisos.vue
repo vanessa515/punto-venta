@@ -24,7 +24,7 @@
                         <tr>
                         
                             <th>ID</th>
-                            <th>ROLes</th>
+                            <th>ROL</th>
                             <th>FECHA DE REGISTRO</th>
                             <th>PERMISOS</th>
                             <th>ACCIONES</th>
@@ -50,12 +50,26 @@
                                     :key="permiso.id_permiso"
                                     class="mb-1"
                                 >
-                                    <span class="badge bg-primary">
+                                    <span class="badge bg-success">
                                         {{ permiso.nombre }}
                                     </span>
                                 </div>
                             </td>
-                            <td></td>
+                            <td>
+                            
+                                <div>
+                                
+                                    <button class="btn btn-sm btn-primary me-1" @click="editarRol(rol)">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </button>
+
+                                    <button class="btn btn-sm btn-danger me-1" @click="Eliminar(rol)">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+
+                                </div>
+
+                            </td>
                         </tr>
                     </tbody>
 
@@ -73,7 +87,9 @@
         <div class="modal-content-custom">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>Registrar Rol</h5>
+                <h5>
+                    {{ editando ? 'Editar Rol' : 'Registrar Rol' }}
+                </h5>
 
                 <button
                     class="btn-close"
@@ -86,7 +102,17 @@
                     type="text"
                     class="form-control"
                     placeholder="Nombre"
-                ><br>
+                    v-model="nombreRol"
+                    :class="{ 'is-invalid': errorNombre }"
+                    required
+                >
+                <small
+                    v-if="errorNombre"
+                    class="text-danger"
+                >
+                    {{ errorNombre }}
+                </small>
+                <br>
                 
                 <div class="table table-responsive">
                 
@@ -136,6 +162,13 @@
                         
                     </table>
 
+                    <small
+                        v-if="errorPermisos"
+                        class="text-danger"
+                    >
+                        {{ errorPermisos }}
+                    </small>
+
                 </div>
 
             </div>
@@ -148,8 +181,11 @@
                     Cancelar
                 </button>
 
-                <button class="btn btn-primary">
-                    Guardar
+                <button
+                    class="btn btn-primary"
+                    @click="editando ? ActualizarRol() : GuardarPermisos()"
+                >
+                    {{ editando ? 'Actualizar' : 'Guardar' }}
                 </button>
             </div>
 
@@ -160,6 +196,7 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -167,9 +204,16 @@ export default {
       roles: [],
       busqueda: '',
       mostrarModal: false,
+      nombreRol: '',
 
       permisos: [],
       permisosSeleccionados: [],
+
+      errorNombre: '',
+      errorPermisos: '',
+
+      editando: false,
+      idRol: null,
     };
   },
 
@@ -189,16 +233,133 @@ export default {
         this.roles = response.data.roles;
 
       } catch (error) {
-        console.log("Error cargando roles:", error);
+
+         console.log(error);
+
       }
+
+    },
+
+    async GuardarPermisos() {
+    try {
+
+        this.errorNombre = '';
+        this.errorPermisos = '';
+
+        if (!this.nombreRol.trim()) {
+            this.errorNombre = 'El nombre es obligatorio.';
+        return;
+        }
+
+        if (this.permisosSeleccionados.length === 0) {
+            this.errorPermisos = 'Debes seleccionar al menos un permiso.';
+            return;
+        }
+
+        const response = await axios.post('/api/permisosinsert',{
+
+            nombre: this.nombreRol,
+            permisos: this.permisosSeleccionados
+
+        });
+
+        Swal.fire({
+            icon:'success',
+            title:'Registrado',
+            text:'El rol ' + this.nombreRol + ' se ha registrado correctamente'
+        })
+
+        this.nombreRol = '';
+        this.permisosSeleccionados = [];
+        this.mostrarModal = false;
+
+        await this.Roles();
+
+        } catch (error) {
+
+            if (error.response?.data?.message) {
+
+                this.errorNombre = error.response.data.message;
+
+            } else {
+
+                console.log(error);
+
+            }
+
+        }
+    },
+
+    async editarRol(rol) {
+
+        this.editando = true;
+        this.idRol = rol.id_rol;
+
+        this.errorNombre = '';
+        this.errorPermisos = '';
+
+        await this.Permisos();
+
+        this.nombreRol = rol.nombre;
+
+        this.permisosSeleccionados = rol.permisos.map(
+            permiso => permiso.id_permiso
+        );
+
+        this.mostrarModal = true;
+    },
+
+    async ActualizarRol() {
+        try {
+
+            this.errorNombre = '';
+            this.errorPermisos = '';
+
+            if (!this.nombreRol.trim()) {
+                this.errorNombre = 'El nombre es obligatorio.';
+                return;
+            }
+
+            if (this.permisosSeleccionados.length === 0) {
+                this.errorPermisos = 'Debes seleccionar al menos un permiso.';
+                return;
+            }
+
+            await axios.put('/api/permisosupdate', {
+                id: this.idRol,
+                nombre: this.nombreRol,
+                permisos: this.permisosSeleccionados
+            });
+
+            this.mostrarModal = false;
+
+            this.limpiarFormulario();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Actualizado',
+                text: 'El rol se actualizó correctamente'
+            });
+
+            await this.Roles();
+
+        } catch (error) {
+
+            if (error.response?.data?.message) {
+                this.errorNombre = error.response.data.message;
+            } else {
+                console.log(error);
+            }
+
+        }
     },
 
     async Permisos() {
-    try {
+        try {
 
-        const response = await axios.get('/api/permisos');
+            const response = await axios.get('/api/permisos');
 
-        this.permisos = response.data.permisos;
+            this.permisos = response.data.permisos;
 
         } catch (error) {
 
@@ -207,12 +368,70 @@ export default {
         }
     },
 
+
+    async Eliminar(rol) {
+
+        const result = await Swal.fire({
+            title: `<p style="text-align: center; ">Estas seguro de eliminar el rol: ${rol.nombre}?</p>`,
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        try {
+
+            const response = await axios.delete('/api/permisosdelete', {
+                data: {
+                    id: rol.id_rol
+                }
+            });
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: response.data.message
+            });
+
+            this.Roles();
+
+        } catch (error) {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response?.data?.message || 'Ocurrió un error'
+            });
+
+        }
+    },
+
+
     async abrirModal() {
+
+        this.limpiarFormulario();
 
         this.mostrarModal = true;
 
         await this.Permisos();
     },
+
+    limpiarFormulario() {
+
+        this.editando = false;
+        this.idRol = null;
+
+        this.nombreRol = '';
+        this.permisosSeleccionados = [];
+
+        this.errorNombre = '';
+        this.errorPermisos = '';
+    }
 
   },
 };
