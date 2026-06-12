@@ -35,7 +35,7 @@
                 
                     <tr>
 
-                        <th>Nombre</th>
+                        <th>Empresa</th>
                         <th>Rfc</th>
                         <th>Correo</th>
                         <th>Direccion</th>
@@ -59,14 +59,14 @@
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <img
-                                    :src="compania.avatar ? `/storage/${compania.avatar}` : '/images/users_default.png'"
-                                    alt="Avatar"
+                                    :src="compania.logo ? `/storage/${compania.logo}` : '/images/users_default.png'"
+                                    alt="Logo"
                                     class="avatar-tabla"
                                 >
                                 <span>{{ compania.nombre }}</span>
                             </div>
                         </td>
-                        <td> {{ compania.rfc }} </td>
+                        <td>{{ compania.rfc }} </td>
                         <td>{{ compania.email }}</td>
                         <td>{{ compania.direccion }}</td>
                         <td>{{ compania.telefono }}</td>
@@ -129,9 +129,8 @@
 
                             <div class="avatar-preview-wrapper">
                                 <img
-                                    v-if="previewImg"
-                                    :src="previewImg"
-                                    alt="Avatar"
+                                    v-if="previewLogo"
+                                    :src="previewLogo"
                                     class="avatar-preview"
                                 >
 
@@ -157,10 +156,10 @@
                                 </small>
 
                                 <small
-                                    v-if="errorImg"
+                                    v-if="errorLogo"
                                     class="text-danger d-block mt-1"
                                 >
-                                    {{ errorImg }}
+                                    {{ errorLogo }}
                                 </small>
 
                             </div>
@@ -317,16 +316,15 @@ export default {
             // Validaciones
             errorTelefono: '',
             errorDireccion: '',
-            errorCp: '',
             errorNombre: '',
             errorEmail: '',
 
             errorRfc: '',
 
             /////IMg
-            previewImg: null,
-            errorImg: '',
-            Img: null,
+            previewLogo: null,
+            errorLogo: '',
+            logo: null,
 
             ///Edicion
             editando: false,
@@ -395,18 +393,25 @@ export default {
                 return;
                 }
 
+                if (!this.direccion.trim()) {
+                    this.errorDireccion = 'La direccion es obligatorio.';
+                return;
+                }
                 const formData = new FormData();
 
                 formData.append('nombre', this.nombre);
                 formData.append('email', this.email);
+                formData.append('rfc', this.rfc);
+                formData.append('telefono', this.telefono);
+                formData.append('direccion', this.direccion);
 
 
-                if (this.avatar) {
-                    formData.append('avatar', this.avatar);
+                if (this.logo) {
+                    formData.append('logo', this.logo);
                 }
 
                 const response = await axios.post(
-                    '/api/registrousr',
+                    '/api/companias/store',
                     formData,
                 );
 
@@ -465,17 +470,21 @@ export default {
             this.editando = false;
 
             this.nombre = '';
-            this.email = ''
-            this.avatar = null,
-            this.cp = '',
-            this.direccion = '',
-            this.telefono = '',
+            this.email = '';
+            this.rfc = '';
+            this.logo = null,
+            this.direccion = '';
+            this.telefono = '';
 
             this.errorNombre = '';
             this.errorEmail = '';
+            this.errorDireccion = '';
+            this.errorTelefono = '';
+            this.errorRfc = '',
 
-            this.previewImg = null;
-            this.errorImg = '';
+            this.previewLogo = null;
+            this.errorLogo = '';
+            this.logo = '';
 
             mostrarModal: false;
             
@@ -489,20 +498,17 @@ export default {
 
             this.errorNombre = '';
             this.errorEmail = '';
-
-
-            this.errorCp = '';
             this.errorDireccion = '';
             this.errorTelefono = '';
+            this.errorRfc = '',
 
-            this.nombre = compania.username;
-            this.email = compania.correo;
-            this.avatar = compania.avatar;
-            this.previewImg = `/storage/${compania.avatar}`; 
-            this.cp = compania.cp;
+            this.nombre = compania.nombre;
+            this.email = compania.email;
+            this.rfc = compania.rfc;
+            this.logo = compania.logo;
+            this.previewLogo = `/storage/${compania.logo}`; 
             this.direccion = compania.direccion;
             this.telefono = compania.telefono;
-
 
             this.mostrarModal = true;
 
@@ -517,6 +523,9 @@ export default {
 
                 this.errorNombre = '';
                 this.errorEmail = '';
+                this.errorRfc = '';
+                this.errorTelefono = '';
+      
 
                 if (!this.nombre.trim()) {
                     this.errorNombre = 'El nombre de la compania es obligatorio.';
@@ -533,22 +542,31 @@ export default {
                     return;
                 }
 
+                if (!this.telefono.trim()) {
+                    this.errorTelefono = 'El telefono es obligatorio.';
+                return;
+                }
+
+                if (!this.direccion.trim()) {
+                    this.errorDireccion = 'La direccion es obligatorio.';
+                return;
+                }
+
                const formData = new FormData();
 
                 formData.append('_method', 'PUT');
                 formData.append('id', this.idCompania);
                 formData.append('nombre', this.nombre);
                 formData.append('email', this.email);
-
-                formData.append('cp', this.cp);
                 formData.append('direccion', this.direccion);
                 formData.append('telefono', this.telefono);
+                formData.append('rfc', this.rfc);
 
-                if (this.avatar instanceof File) {
-                    formData.append('avatar', this.avatar);
+                if (this.logo instanceof File) {
+                    formData.append('logo', this.logo);
                 }
 
-                await axios.post('/api/actualizarusr', formData);
+                await axios.post('/api/actualizar/comp', formData);
 
                 this.mostrarModal = false;
 
@@ -574,8 +592,8 @@ export default {
                         this.errorEmail = errors.email[0];
                     }
 
-                    if (errors.cp) {
-                        this.errorCp = errors.cp[0];
+                    if (errors.rfc) {
+                        this.errorRfc = errors.rfc[0];
                     }
 
                     if (errors.direccion) {
@@ -610,9 +628,9 @@ export default {
 
             try {
 
-                const response = await axios.delete('/api/usrdelete', {
+                const response = await axios.delete('/api/eliminar/comp', {
                     data: {
-                        id: compania.id
+                        id: compania.id_compania
                     }
                 });
 
@@ -651,15 +669,15 @@ export default {
             ];
 
             if (!formatosPermitidos.includes(archivo.type)) {
-                this.errorImg = 'Seleccione una imagen válida.';
+                this.errorLogo = 'Seleccione una imagen válida.';
                 event.target.value = '';
                 return;
             }
 
-            this.errorImg = '';
-            this.Img = archivo;
+            this.errorLogo = '';
+            this.logo = archivo;
 
-            this.previewImg = URL.createObjectURL(archivo);
+            this.previewLogo = URL.createObjectURL(archivo);
         },
 
     }

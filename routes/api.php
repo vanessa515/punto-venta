@@ -30,3 +30,9 @@ Route::delete('/usrdelete', [UsuariosController::class, 'destroy']);
 ////////////////COMPANIAS////////////////////
 
 Route::get('/companias', [CompaniasController::class, 'index']);
+
+Route::post('/companias/store', [CompaniasController::class, 'store']);
+
+Route::put('/actualizar/comp', [CompaniasController::class, 'update']);
+
+Route::delete('/eliminar/comp', [CompaniasController::class, 'destroy']);

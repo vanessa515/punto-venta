@@ -27,7 +27,8 @@ class CompaniasController extends Controller
             'rfc',
             'email',
             'telefono',
-            'direccion'
+            'direccion',
+            'logo'
     
             )
         ->where('nombre',"like","%".$busqueda."%")
@@ -47,48 +48,44 @@ class CompaniasController extends Controller
     try {
 
         $validatedData = $request->validate([
-            'nombre' => 'required|string|max:255|unique:users,name',
-            'nombre_personal' => 'required|string|max:255',
-            'cp' => 'required',
+            'nombre' => 'required|string|max:255|unique:companias,nombre',
+            'rfc' => 'required|string|max:50',
+            'email' => 'required|string|email|max:255|unique:companias,email',
             'direccion' => 'required',
             'telefono' => 'required',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8',
-            'fk_rol' => 'required|integer|exists:roles,id_rol',
-            'fk_compania' => 'required|integer',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ],[
-            'nombre.unique' => 'El username ya existe, intenta con otro.',
+            'nombre.unique' => 'La empresa ya existe, intenta con otro.',
             'email.unique' => 'El correo ya está registrado.',
         ]);
 
 
-        $user = new User();
-        $user->name = $validatedData['nombre'];
-        $user->email = $validatedData['email'];
-        $user->password = bcrypt($validatedData['password']);
-        $user->fk_rol = $validatedData['fk_rol'];
-        $user->estatus = 1;
+        $companias = new Companias();
+        $companias->nombre = $validatedData['nombre'];
+        $companias->email = $validatedData['email'];
+        $companias->rfc = $validatedData['rfc'];
+        $companias->direccion = $validatedData['direccion'];
+        $companias->telefono = $validatedData['telefono'];
 
-        if ($request->hasFile('avatar')) {
+        if ($request->hasFile('logo')) {
 
-            $avatar = $request->file('avatar');
+            $logo = $request->file('logo');
 
-            $nombreAvatar = time() . '_' . $avatar->getClientOriginalName();
+            $nombrelogo = time() . '_' . $logo->getClientOriginalName();
 
-            $user->avatar = $avatar->storeAs(
-                'avatars',
-                $nombreAvatar,
+            $companias->logo = $logo->storeAs(
+                'logo',
+                $nombrelogo,
                 'public'
             );
         }
 
-            $user->save();
+            $companias->save();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario creado exitosamente',
-                'usuario' => $user
+                'companias' => $companias
             ], 201);
 
             } catch (ValidationException $e) {
@@ -105,64 +102,48 @@ class CompaniasController extends Controller
         try {
 
             $validatedData = $request->validate([
-                'id' => 'required|integer|exists:users,id',
+                'id' => 'required|integer|exists:companias,id_compania',
 
-                'nombre' => 'required|string|max:255|unique:users,name,' . $request->id,
-                'nombre_personal' => 'required|string|max:255',
-                'cp' => 'required',
+                'nombre' => 'required|string|max:255|unique:companias,nombre,' . $request->id . ',id_compania',
                 'direccion' => 'required',
                 'telefono' => 'required',
-                'email' => 'required|string|email|max:255|unique:users,email,' . $request->id,
-                'password' => 'nullable|string|min:8',
-                'fk_rol' => 'required|integer|exists:roles,id_rol',
-                'estatus' => 'required|integer',
-                'fk_compania' => 'required|integer',
-                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'rfc' => 'required|string|max:50',
+                'email' => 'required|string|email|max:255|unique:companias,email,' . $request->id . ',id_compania',
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ], [
-                'nombre.unique' => 'El username ya existe, intenta con otro.',
+                'nombre.unique' => 'La compañía ya existe, intenta con otra.',
                 'email.unique' => 'El correo ya está registrado.',
             ]);
 
             return DB::transaction(function () use ($validatedData, $request) {
 
-                $user = User::findOrFail($validatedData['id']);
+                $compania = Companias::findOrFail($validatedData['id']);
 
-                $user->name = $validatedData['nombre'];
-                $user->email = $validatedData['email'];
-                $user->fk_rol = $validatedData['fk_rol'];
-                $user->estatus = $validatedData['estatus'];
+                $compania->nombre = $validatedData['nombre'];
+                $compania->email = $validatedData['email'];
+                $compania->rfc = $validatedData['rfc'];
+                $compania->direccion = $validatedData['direccion'];
+                $compania->telefono = $validatedData['telefono'];
 
-                if (!empty($validatedData['password'])) {
-                    $user->password = Hash::make($validatedData['password']);
-                }
 
-                if ($request->hasFile('avatar')) {
-                    if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                        Storage::disk('public')->delete($user->avatar);
+                if ($request->hasFile('logo')) {
+                    if ($compania->logo && Storage::disk('public')->exists($compania->logo)) {
+                        Storage::disk('public')->delete($compania->logo);
                     }
 
-                    $avatar = $request->file('avatar');
-                    $nombreAvatar = time() . '_' . $avatar->getClientOriginalName();
+                    $logo = $request->file('logo');
+                    $nombrelogo = time() . '_' . $logo->getClientOriginalName();
 
-                    $user->avatar = $avatar->storeAs('avatars', $nombreAvatar, 'public');
+                    $compania->logo = $logo->storeAs('avatars', $nombrelogo, 'public');
                 }
 
-                $user->save();
+                $compania->save();
 
-                $persona = Personal::findOrFail($user->fk_persona);
-
-                $persona->nombre = $validatedData['nombre_personal'];
-                $persona->cp = $validatedData['cp'];
-                $persona->direccion = $validatedData['direccion'];
-                $persona->telefono = $validatedData['telefono'];
-                $persona->fk_compania = $validatedData['fk_compania'];
-
-                $persona->save();
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Usuario actualizado exitosamente',
-                    'usuario' => $user
+                    'message' => 'Compania actualizada exitosamente',
+                    'companias' => $compania
                 ]);
 
             });
@@ -189,26 +170,26 @@ class CompaniasController extends Controller
     {
         $id = $request->id;
 
-        $usuario = DB::table('users')
-            ->select('avatar')
-            ->where('id', $id)
+        $compania = DB::table('companias')
+            ->select('logo')
+            ->where('id_compania', $id)
             ->first();
 
-        if ($usuario && $usuario->avatar) {
+        if ($compania && $compania->logo) {
 
-            if (Storage::disk('public')->exists($usuario->avatar)) {
-                Storage::disk('public')->delete($usuario->avatar);
+            if (Storage::disk('public')->exists($compania->logo)) {
+                Storage::disk('public')->delete($compania->logo);
             }
 
         }
 
-        DB::table('users')
-            ->where('id', $id)
+        DB::table('companias')
+            ->where('id_compania', $id)
             ->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Usuario eliminado correctamente'
+            'message' => 'Compañia eliminada correctamente'
         ]);
     }
 
