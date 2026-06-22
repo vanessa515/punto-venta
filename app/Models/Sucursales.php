@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Companias extends Model
+class Sucursales extends Model
 {
-    protected $table = "companias";
-    protected $primaryKey = "id_compania";
+    protected $table = "sucursales";
+    protected $primaryKey = "id_sucursal";
     protected $fillable = ['nombre','rfc','email','telefono','direccion','logo'];
     
     

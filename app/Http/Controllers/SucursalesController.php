@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Companias;
+use App\Models\Sucursales;
 use App\Models\Personal;
 use App\Models\User;
 use Hash;
@@ -13,16 +13,16 @@ use Illuminate\Support\Facades\DB;
 use Storage;
 
 
-class CompaniasController extends Controller
+class SucursalesController extends Controller
 {
 
     public function index(Request $request){
 
        $busqueda = $request ->get("busqueda");
 
-       $companias = DB::table('companias')
+       $sucursales = DB::table('sucursales')
         ->select(
-            'id_compania',
+            'id_sucursal',
             'nombre',
             'rfc',
             'email',
@@ -32,12 +32,11 @@ class CompaniasController extends Controller
     
             )
         ->where('nombre',"like","%".$busqueda."%")
-        ->orderBy("id_compania", "asc")
+        ->orderBy("id_sucursal", "asc")
         ->get();
 
-
        return response()->json([
-            'companias' => $companias,
+            'sucursales' => $sucursales,
         ]);
 
     }
@@ -48,9 +47,9 @@ class CompaniasController extends Controller
     try {
 
         $validatedData = $request->validate([
-            'nombre' => 'required|string|max:255|unique:companias,nombre',
+            'nombre' => 'required|string|max:255|unique:sucursales,nombre',
             'rfc' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255|unique:companias,email',
+            'email' => 'required|string|email|max:255|unique:sucursales,email',
             'direccion' => 'required',
             'telefono' => 'required',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -60,12 +59,12 @@ class CompaniasController extends Controller
         ]);
 
 
-        $companias = new Companias();
-        $companias->nombre = $validatedData['nombre'];
-        $companias->email = $validatedData['email'];
-        $companias->rfc = $validatedData['rfc'];
-        $companias->direccion = $validatedData['direccion'];
-        $companias->telefono = $validatedData['telefono'];
+        $sucursales = new Sucursales();
+        $sucursales->nombre = $validatedData['nombre'];
+        $sucursales->email = $validatedData['email'];
+        $sucursales->rfc = $validatedData['rfc'];
+        $sucursales->direccion = $validatedData['direccion'];
+        $sucursales->telefono = $validatedData['telefono'];
 
         if ($request->hasFile('logo')) {
 
@@ -73,19 +72,19 @@ class CompaniasController extends Controller
 
             $nombrelogo = time() . '_' . $logo->getClientOriginalName();
 
-            $companias->logo = $logo->storeAs(
+            $sucursales->logo = $logo->storeAs(
                 'logo',
                 $nombrelogo,
                 'public'
             );
         }
 
-            $companias->save();
+            $sucursales->save();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario creado exitosamente',
-                'companias' => $companias
+                'sucursales' => $sucursales
             ], 201);
 
             } catch (ValidationException $e) {
@@ -102,48 +101,48 @@ class CompaniasController extends Controller
         try {
 
             $validatedData = $request->validate([
-                'id' => 'required|integer|exists:companias,id_compania',
+                'id' => 'required|integer|exists:sucursales,id_sucursal',
 
-                'nombre' => 'required|string|max:255|unique:companias,nombre,' . $request->id . ',id_compania',
+                'nombre' => 'required|string|max:255|unique:sucursales,nombre,' . $request->id . ',id_sucursal',
                 'direccion' => 'required',
                 'telefono' => 'required',
                 'rfc' => 'required|string|max:50',
-                'email' => 'required|string|email|max:255|unique:companias,email,' . $request->id . ',id_compania',
+                'email' => 'required|string|email|max:255|unique:sucursales,email,' . $request->id . ',id_sucursal',
                 'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ], [
-                'nombre.unique' => 'La compañía ya existe, intenta con otra.',
+                'nombre.unique' => 'La sucursal ya existe, intenta con otra.',
                 'email.unique' => 'El correo ya está registrado.',
             ]);
 
             return DB::transaction(function () use ($validatedData, $request) {
 
-                $compania = Companias::findOrFail($validatedData['id']);
+                $sucursales = Sucursales::findOrFail($validatedData['id']);
 
-                $compania->nombre = $validatedData['nombre'];
-                $compania->email = $validatedData['email'];
-                $compania->rfc = $validatedData['rfc'];
-                $compania->direccion = $validatedData['direccion'];
-                $compania->telefono = $validatedData['telefono'];
+                $sucursales->nombre = $validatedData['nombre'];
+                $sucursales->email = $validatedData['email'];
+                $sucursales->rfc = $validatedData['rfc'];
+                $sucursales->direccion = $validatedData['direccion'];
+                $sucursales->telefono = $validatedData['telefono'];
 
 
                 if ($request->hasFile('logo')) {
-                    if ($compania->logo && Storage::disk('public')->exists($compania->logo)) {
-                        Storage::disk('public')->delete($compania->logo);
+                    if ($sucursales->logo && Storage::disk('public')->exists($sucursales->logo)) {
+                        Storage::disk('public')->delete($sucursales->logo);
                     }
 
                     $logo = $request->file('logo');
                     $nombrelogo = time() . '_' . $logo->getClientOriginalName();
 
-                    $compania->logo = $logo->storeAs('avatars', $nombrelogo, 'public');
+                    $sucursales->logo = $logo->storeAs('avatars', $nombrelogo, 'public');
                 }
 
-                $compania->save();
+                $sucursales->save();
 
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Compania actualizada exitosamente',
-                    'companias' => $compania
+                    'message' => 'sucursal actualizada exitosamente',
+                    'sucursales' => $sucursales
                 ]);
 
             });
@@ -170,26 +169,26 @@ class CompaniasController extends Controller
     {
         $id = $request->id;
 
-        $compania = DB::table('companias')
+        $sucursales = DB::table('sucursales')
             ->select('logo')
-            ->where('id_compania', $id)
+            ->where('id_sucursal', $id)
             ->first();
 
-        if ($compania && $compania->logo) {
+        if ($sucursales && $sucursales->logo) {
 
-            if (Storage::disk('public')->exists($compania->logo)) {
-                Storage::disk('public')->delete($compania->logo);
+            if (Storage::disk('public')->exists($sucursales->logo)) {
+                Storage::disk('public')->delete($sucursales->logo);
             }
 
         }
 
-        DB::table('companias')
-            ->where('id_compania', $id)
+        DB::table('sucursales')
+            ->where('id_sucursal', $id)
             ->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Compañia eliminada correctamente'
+            'message' => 'Sucursal eliminada correctamente'
         ]);
     }
 

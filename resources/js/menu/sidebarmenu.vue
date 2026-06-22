@@ -179,7 +179,7 @@ function toggleTheme() {
                 </router-link>
 
                 <router-link
-                    to="/companias"
+                    to="/sucursales"
                     class="menu-item"
                 >
                     <span class="icon"><i class="fa-solid fa-gear"></i></span>
@@ -188,7 +188,7 @@ function toggleTheme() {
                         v-if="sidebarOpen"
                         class="label"
                     >
-                        Companias
+                        Sucursales
                     </span>
                 </router-link>
 

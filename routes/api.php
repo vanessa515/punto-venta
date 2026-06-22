@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CompaniasController;
+use App\Http\Controllers\SucursalesController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RolesController;
@@ -29,10 +29,10 @@ Route::delete('/usrdelete', [UsuariosController::class, 'destroy']);
 
 ////////////////COMPANIAS////////////////////
 
-Route::get('/companias', [CompaniasController::class, 'index']);
+Route::get('/sucursales', [SucursalesController::class, 'index']);
 
-Route::post('/companias/store', [CompaniasController::class, 'store']);
+Route::post('/sucursales/store', [SucursalesController::class, 'store']);
 
-Route::put('/actualizar/comp', [CompaniasController::class, 'update']);
+Route::put('/actualizar/comp', [SucursalesController::class, 'update']);
 
-Route::delete('/eliminar/comp', [CompaniasController::class, 'destroy']);
+Route::delete('/eliminar/comp', [SucursalesController::class, 'destroy']);
