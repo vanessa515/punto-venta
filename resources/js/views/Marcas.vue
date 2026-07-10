@@ -7,7 +7,7 @@
             <div class="table table-responsive">
 
                 <div class="d-flex align-items-center gap-2">
-                    <input type="text" placeholder="Busqueda" class="form-control busqueda" v-model="busqueda" @keyup.enter="Categorias">
+                    <input type="text" placeholder="Busqueda" class="form-control busqueda" v-model="busqueda" @keyup.enter="Marcas">
 
                     <button
                         class="btn btn-primary ms-auto"
@@ -23,7 +23,6 @@
                         <tr>
                             <th>ID</th>
                             <th>NOMBRE</th>
-                            <th>CATEGORÍA PADRE</th>
                             <th>FECHA DE REGISTRO</th>
                             <th>ESTATUS</th>
                             <th>ACCIONES</th>
@@ -31,24 +30,23 @@
                     </thead>
 
                     <tbody>
-                        <tr v-if="categorias.length === 0">
-                            <td colspan="6" class="text-center">
+                        <tr v-if="marcas.length === 0">
+                            <td colspan="5" class="text-center">
                                 No se encontraron registros
                             </td>
                         </tr>
 
-                        <tr v-for="categoria in categorias" :key="categoria.id_categoria">
-                            <td>{{ categoria.id_categoria }}</td>
-                            <td>{{ categoria.nombre }}</td>
-                            <td>{{ categoria.padre ? categoria.padre.nombre : '—' }}</td>
-                            <td>{{ categoria.created_at }}</td>
+                        <tr v-for="marca in marcas" :key="marca.id_marca">
+                            <td>{{ marca.id_marca }}</td>
+                            <td>{{ marca.nombre }}</td>
+                            <td>{{ marca.created_at }}</td>
                             <td>
-                                <span :class="categoria.estatus ? 'badge bg-success' : 'badge bg-secondary'">
-                                    {{ categoria.estatus ? 'Activa' : 'Inactiva' }}
+                                <span :class="marca.estatus ? 'badge bg-success' : 'badge bg-secondary'">
+                                    {{ marca.estatus ? 'Activa' : 'Inactiva' }}
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" @click="abrirModalEditar(categoria)">
+                                <button class="btn btn-sm btn-outline-primary" @click="abrirModalEditar(marca)">
                                     Editar
                                 </button>
                             </td>
@@ -67,7 +65,7 @@
         <div class="modal-content-custom">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>{{ modoEdicion ? 'Editar Categoría' : 'Registrar Categoría' }}</h5>
+                <h5>{{ modoEdicion ? 'Editar Marca' : 'Registrar Marca' }}</h5>
 
                 <button
                     class="btn-close"
@@ -81,38 +79,12 @@
                     type="text"
                     class="form-control"
                     :class="{ 'is-invalid': erroresCampo.nombre }"
-                    placeholder="Nombre de la categoría"
+                    placeholder="Nombre de la marca"
                     v-model="form.nombre"
                 >
                 <div v-if="erroresCampo.nombre" class="invalid-feedback d-block">
                     {{ erroresCampo.nombre }}
                 </div>
-                <br>
-
-                <label class="form-label">Descripción</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    :class="{ 'is-invalid': erroresCampo.descripcion }"
-                    placeholder="Descripción (opcional)"
-                    v-model="form.descripcion"
-                >
-                <div v-if="erroresCampo.descripcion" class="invalid-feedback d-block">
-                    {{ erroresCampo.descripcion }}
-                </div>
-                <br>
-
-                <label class="form-label">Categoría padre (opcional)</label>
-                <select class="form-select" v-model="form.fk_categoria_padre">
-                    <option :value="null">— Ninguna (categoría raíz) —</option>
-                    <option
-                        v-for="cat in categoriasPadre"
-                        :key="cat.id_categoria"
-                        :value="cat.id_categoria"
-                    >
-                        {{ cat.nombre }}
-                    </option>
-                </select>
             </div>
 
             <div v-if="error" class="alert alert-danger py-2">
@@ -143,8 +115,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      categorias: [],
-      categoriasPadre: [],
+      marcas: [],
       busqueda: '',
       mostrarModal: false,
       modoEdicion: false,
@@ -153,112 +124,95 @@ export default {
       erroresCampo: {},
 
       form: {
-        id_categoria: null,
+        id_marca: null,
         nombre: '',
-        descripcion: '',
-        fk_categoria_padre: null,
       },
     };
   },
 
   mounted() {
-    this.Categorias();
+    this.Marcas();
   },
 
   methods: {
-    async Categorias() {
+    async Marcas() {
       try {
-        const response = await axios.get('/api/categorias', {
+        const response = await axios.get('/api/marcas', {
           params: { busqueda: this.busqueda }
         });
 
-        this.categorias = response.data.categorias;
+        this.marcas = response.data.marcas;
       } catch (error) {
-        console.log("Error cargando categorías:", error);
+        console.log("Error cargando marcas:", error);
       }
     },
 
-    async cargarCategoriasPadre() {
-      try {
-        const response = await axios.get('/api/categorias/padres');
-        this.categoriasPadre = response.data.categorias;
-      } catch (error) {
-        console.log("Error cargando categorías padre:", error);
-      }
-    },
-
-    validarFormulario() {
-        this.erroresCampo = {};
-
-        if (!this.form.nombre || !this.form.nombre.trim()) {
-            this.erroresCampo.nombre = 'El nombre es obligatorio.';
-        } else if (this.form.nombre.trim().length < 3) {
-            this.erroresCampo.nombre = 'El nombre debe tener al menos 3 caracteres.';
-        }
-
-        return Object.keys(this.erroresCampo).length === 0;
-    },
-
-    async abrirModalNuevo() {
+    abrirModalNuevo() {
       this.modoEdicion = false;
       this.resetForm();
       this.mostrarModal = true;
-      await this.cargarCategoriasPadre();
     },
 
-    async abrirModalEditar(categoria) {
+    abrirModalEditar(marca) {
       this.modoEdicion = true;
       this.form = {
-        id_categoria: categoria.id_categoria,
-        nombre: categoria.nombre,
-        descripcion: categoria.descripcion,
-        fk_categoria_padre: categoria.fk_categoria_padre,
+        id_marca: marca.id_marca,
+        nombre: marca.nombre,
       };
       this.mostrarModal = true;
-      await this.cargarCategoriasPadre();
     },
 
     cerrarModal() {
-        this.mostrarModal = false;
-        this.error = null;
-        this.erroresCampo = {};
+      this.mostrarModal = false;
+      this.error = null;
+      this.erroresCampo = {};
     },
 
     resetForm() {
       this.form = {
-        id_categoria: null,
+        id_marca: null,
         nombre: '',
-        descripcion: '',
-        fk_categoria_padre: null,
       };
     },
 
+    validarFormulario() {
+      this.erroresCampo = {};
+
+      if (!this.form.nombre || !this.form.nombre.trim()) {
+        this.erroresCampo.nombre = 'El nombre es obligatorio.';
+      } else if (this.form.nombre.trim().length < 3) {
+        this.erroresCampo.nombre = 'El nombre debe tener al menos 3 caracteres.';
+      }
+
+      return Object.keys(this.erroresCampo).length === 0;
+    },
+
     async guardar() {
-        this.error = null;
+      this.error = null;
 
-        if (!this.validarFormulario()) {
-            return;
-        }
+      if (!this.validarFormulario()) {
+        return;
+      }
 
-        this.guardando = true;
+      this.guardando = true;
 
       try {
         if (this.modoEdicion) {
-          await axios.put(`/api/categorias/${this.form.id_categoria}`, this.form);
+          await axios.put(`/api/marcas/${this.form.id_marca}`, this.form);
         } else {
-          await axios.post('/api/categorias', this.form);
+          await axios.post('/api/marcas', this.form);
         }
 
         this.cerrarModal();
-        await this.Categorias();
+        await this.Marcas();
       } catch (error) {
         if (error.response && error.response.data && error.response.data.errors) {
           const primerError = Object.values(error.response.data.errors)[0];
           this.error = primerError[0];
         } else {
-          this.error = 'Ocurrió un error al guardar la categoría';
+          this.error = 'Ocurrió un error al guardar la marca';
         }
-        console.log("Error guardando categoría:", error);
+        console.log("Error guardando marca:", error);
       } finally {
         this.guardando = false;
       }
@@ -305,8 +259,7 @@ body.dark-theme .table-hover tbody tr:hover td{
     background-color:#1f2937;
 }
 
-body.dark-theme .form-control,
-body.dark-theme .form-select{
+body.dark-theme .form-control{
     background-color:#1f2937;
     border-color:#374151;
     color:white;
