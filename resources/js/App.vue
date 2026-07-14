@@ -107,6 +107,20 @@ function toggleTheme() {
                 </router-link>
 
                 <router-link
+                    to="/transferencias"
+                    class="menu-item"
+                >
+                    <span class="icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></span>
+
+                    <span
+                        v-if="sidebarOpen"
+                        class="label"
+                    >
+                        Transferencias
+                    </span>
+                </router-link>
+
+                <router-link
                     to="/ventas"
                     class="menu-item"
                 >
