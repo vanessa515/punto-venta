@@ -1,3 +1,34 @@
+<script setup>
+import { ref, watch } from 'vue'
+
+const sidebarOpen = ref(true)
+
+const darkMode = ref(
+    localStorage.getItem('theme') === 'dark'
+)
+
+watch(
+    darkMode,
+    (value) => {
+        document.body.classList.toggle('dark-theme', value)
+
+        localStorage.setItem(
+            'theme',
+            value ? 'dark' : 'light'
+        )
+    },
+    { immediate: true }
+)
+
+function toggleSidebar() {
+    sidebarOpen.value = !sidebarOpen.value
+}
+
+function toggleTheme() {
+    darkMode.value = !darkMode.value
+}
+</script>
+
 <template>
 
     <div class="layout">
@@ -44,20 +75,6 @@
                         class="label"
                     >
                         Categorías
-                    </span>
-                </router-link>
-
-                <router-link
-                    to="/marcas"
-                    class="menu-item"
-                >
-                    <span class="icon"><i class="fa-solid fa-tag"></i></span>
-
-                    <span
-                        v-if="sidebarOpen"
-                        class="label"
-                    >
-                        Marcas
                     </span>
                 </router-link>
 
@@ -158,6 +175,20 @@
                         class="label"
                     >
                         Usuarios
+                    </span>
+                </router-link>
+
+                <router-link
+                    to="/sucursales"
+                    class="menu-item"
+                >
+                    <span class="icon"><i class="fa-solid fa-gear"></i></span>
+
+                    <span
+                        v-if="sidebarOpen"
+                        class="label"
+                    >
+                        Sucursales
                     </span>
                 </router-link>
 

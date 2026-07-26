@@ -9,12 +9,35 @@ import Productos from '../views/Productos.vue'
 
 const routes = [
     {
-        path: '/inicio',
-        component: Inicio
+        path: '/',
+        component: Login,
     },
+
     {
-        path: '/categorias',
-        component: Categorias
+        path: '/',
+        component: Menu,
+        children: [
+            {
+                path: 'inicio',
+                component: Inicio,
+            },
+            {
+                path: 'categorias',
+                component: Categorias,
+            },
+            {
+                path: 'rolespermisos',
+                component: RolesPermisos,
+            },
+            {
+                path: 'usuarios',
+                component: Usuarios,
+            },
+            {
+                path: 'sucursales',
+                component: Sucursales,
+            },
+        ],
     },
     {
         path: '/rolespermisos',
@@ -32,7 +55,7 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
 })
 
 export default router

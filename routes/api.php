@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\SucursalesController;
+use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\CategoriaController;
