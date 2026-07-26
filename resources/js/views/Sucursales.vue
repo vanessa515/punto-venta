@@ -48,40 +48,40 @@
 
                 <tbody>
 
-                    <tr v-if="companias.length === 0">
+                    <tr v-if="sucursales.length === 0">
                         <td colspan="7" class="text-center">
                             No se encontraron registros
                         </td>
                     </tr>
                 
-                    <tr v-for="compania in companias" :key="compania.id">
+                    <tr v-for="sucursal in sucursales" :key="sucursal.id">
 
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <img
-                                    :src="compania.logo ? `/storage/${compania.logo}` : '/images/users_default.png'"
+                                    :src="sucursal.logo ? `/storage/${sucursal.logo}` : '/images/users_default.png'"
                                     alt="Logo"
                                     class="avatar-tabla"
                                 >
-                                <span>{{ compania.nombre }}</span>
+                                <span>{{ sucursal.nombre }}</span>
                             </div>
                         </td>
-                        <td>{{ compania.rfc }} </td>
-                        <td>{{ compania.email }}</td>
-                        <td>{{ compania.direccion }}</td>
-                        <td>{{ compania.telefono }}</td>
+                        <td>{{ sucursal.rfc }} </td>
+                        <td>{{ sucursal.email }}</td>
+                        <td>{{ sucursal.direccion }}</td>
+                        <td>{{ sucursal.telefono }}</td>
         
                         <td>
 
                             <div>
                                 
-                                <button class="btn btn-sm btn-primary me-1" @click="editarCompania(compania)">
+                                <button class="btn btn-sm btn-primary me-1" @click="editarsucursal(sucursal)">
 
                                     <i class="fa-solid fa-pencil"></i>
 
                                 </button>
 
-                                <button class="btn btn-sm btn-danger me-1" @click="Eliminar(compania)">
+                                <button class="btn btn-sm btn-danger me-1" @click="Eliminar(sucursal)">
 
                                     <i class="fa-solid fa-trash"></i>
 
@@ -111,7 +111,7 @@
                             class="me-2"
                             :class="editando ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"
                         ></i>
-                            {{ editando ? 'Editar Compania' : 'Registrar Compania' }}
+                            {{ editando ? 'Editar sucursal' : 'Registrar sucursal' }}
                     </h5>
 
                     <button
@@ -302,7 +302,7 @@ export default {
 
     data() {
         return {
-            companias: [],
+            sucursales: [],
             busqueda: '',
 
             rfc: '',
@@ -340,7 +340,7 @@ export default {
 
         async listado() {
             try {
-                const response = await axios.get('/api/companias',{
+                const response = await axios.get('/api/sucursales',{
 
                     params:{
 
@@ -350,11 +350,11 @@ export default {
 
                 });
 
-                this.companias = response.data.companias;
+                this.sucursales = response.data.sucursales;
 
 
             } catch (error) {
-                console.error('Error al obtener companias:', error);
+                console.error('Error al obtener sucursales:', error);
             }
         },
 
@@ -370,11 +370,11 @@ export default {
       
 
                 if (!this.nombre.trim()) {
-                    this.errorNombre = 'El nombre de la compania es obligatorio.';
+                    this.errorNombre = 'El nombre de la sucursal es obligatorio.';
                 return;
                 }
                 if (!this.rfc.trim()) {
-                    this.errorRfc = 'El rfc de la compania es obligatorio.';
+                    this.errorRfc = 'El rfc de la sucursal es obligatorio.';
                 return;
                 }
 
@@ -411,7 +411,7 @@ export default {
                 }
 
                 const response = await axios.post(
-                    '/api/companias/store',
+                    '/api/sucursales/store',
                     formData,
                 );
 
@@ -420,7 +420,7 @@ export default {
 
                 Swal.fire({
                     icon: 'success',
-                    title: 'Compania registrada exitosamente',
+                    title: 'sucursal registrada exitosamente',
                     showConfirmButton: false,
                     timer: 1500
                 });
@@ -454,7 +454,7 @@ export default {
                     return;
                 }
 
-                console.error('Error al registrar compania:', error);
+                console.error('Error al registrar sucursal:', error);
             }
         },
 
@@ -490,11 +490,11 @@ export default {
             
         },
 
-        async editarCompania(compania) {
+        async editarsucursal(sucursal) {
 
             this.editando = true;
 
-            this.idCompania = compania.id_compania;
+            this.idsucursal = sucursal.id_sucursal;
 
             this.errorNombre = '';
             this.errorEmail = '';
@@ -502,13 +502,13 @@ export default {
             this.errorTelefono = '';
             this.errorRfc = '',
 
-            this.nombre = compania.nombre;
-            this.email = compania.email;
-            this.rfc = compania.rfc;
-            this.logo = compania.logo;
-            this.previewLogo = `/storage/${compania.logo}`; 
-            this.direccion = compania.direccion;
-            this.telefono = compania.telefono;
+            this.nombre = sucursal.nombre;
+            this.email = sucursal.email;
+            this.rfc = sucursal.rfc;
+            this.logo = sucursal.logo;
+            this.previewLogo = `/storage/${sucursal.logo}`; 
+            this.direccion = sucursal.direccion;
+            this.telefono = sucursal.telefono;
 
             this.mostrarModal = true;
 
@@ -528,7 +528,7 @@ export default {
       
 
                 if (!this.nombre.trim()) {
-                    this.errorNombre = 'El nombre de la compania es obligatorio.';
+                    this.errorNombre = 'El nombre de la sucursal es obligatorio.';
                     return;
                 }
 
@@ -555,7 +555,7 @@ export default {
                const formData = new FormData();
 
                 formData.append('_method', 'PUT');
-                formData.append('id', this.idCompania);
+                formData.append('id', this.idsucursal);
                 formData.append('nombre', this.nombre);
                 formData.append('email', this.email);
                 formData.append('direccion', this.direccion);
@@ -573,7 +573,7 @@ export default {
                 Swal.fire({
                     icon: 'success',
                     title: 'Actualizado',
-                    text: 'La compania se actualizó correctamente'
+                    text: 'La sucursal se actualizó correctamente'
                 });
 
                 await this.listado();
@@ -611,10 +611,10 @@ export default {
 
         },
 
-        async Eliminar(compania) {
+        async Eliminar(sucursal) {
 
             const result = await Swal.fire({
-                title: `<p style="text-align: center; ">Estas seguro de eliminar la compania: ${compania.nombre}?</p>`,
+                title: `<p style="text-align: center; ">Estas seguro de eliminar la sucursal: ${sucursal.nombre}?</p>`,
                 text: 'Esta acción no se puede deshacer.',
                 icon: 'warning',
                 showCancelButton: true,
@@ -630,7 +630,7 @@ export default {
 
                 const response = await axios.delete('/api/eliminar/comp', {
                     data: {
-                        id: compania.id_compania
+                        id: sucursal.id_sucursal
                     }
                 });
 

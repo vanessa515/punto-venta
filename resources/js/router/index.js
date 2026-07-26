@@ -4,7 +4,7 @@ import Inicio from '../views/Inicio.vue'
 import Categorias from '../views/Categorias.vue'
 import RolesPermisos from '../views/RolesPermisos.vue'
 import Usuarios from '../views/Usuarios.vue'
-import Companias from '../views/Companias.vue'
+import Sucursales from '../views/Sucursales.vue'
 import Login from '../views/Login.vue'
 import Menu from '../menu/sidebarmenu.vue'
 
@@ -35,8 +35,8 @@ const routes = [
                 component: Usuarios,
             },
             {
-                path: 'companias',
-                component: Companias,
+                path: 'sucursales',
+                component: Sucursales,
             },
         ],
     },

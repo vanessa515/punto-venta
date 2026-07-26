@@ -208,24 +208,24 @@
                         <br>
                         <select
                             class="form-select"
-                            v-model="fk_compania"
-                            :class="{ 'is-invalid': errorFk_compania }"
+                            v-model="fk_sucursal"
+                            :class="{ 'is-invalid': errorFk_sucursal }"
                         >
                             <option value="" disabled>
-                                Selecciona una compania
+                                Selecciona una sucursal
                             </option>
 
                             <option
-                                v-for="compania in companias"
-                                :key="compania.id_compania"
-                                :value="compania.id_compania"
+                                v-for="sucursal in sucursales"
+                                :key="sucursal.id_sucursal"
+                                :value="sucursal.id_sucursal"
                             >
-                                {{ compania.nombre_compania }}
+                                {{ sucursal.nombre_sucursal }}
                             </option>
                         </select>
 
-                        <small v-if="errorFk_compania" class="text-danger">
-                            {{ errorFk_compania }}
+                        <small v-if="errorFk_sucursal" class="text-danger">
+                            {{ errorFk_sucursal }}
                         </small>
                     </div>
 
@@ -496,6 +496,7 @@
 
 import axios from "axios";
 import Swal from 'sweetalert2';
+import Sucursales from "./Sucursales.vue";
 
 export default {
 
@@ -503,7 +504,7 @@ export default {
         return {
             usuarios: [],
             roles: [],
-            companias: [],
+            sucursales: [],
             busqueda: '',
             estatus: '',
             filtro: 'users.name',
@@ -517,7 +518,7 @@ export default {
             cp: '',
             direccion: '',
             telefono: '',
-            fk_compania: '',
+            fk_sucursal: '',
 
             // Campos del formulario usuario
             nombre: '',
@@ -527,7 +528,7 @@ export default {
             avatar: null,
 
             // Validaciones
-            errorFk_compania: '',
+            errorFk_sucursal: '',
             errorTelefono: '',
             errorDireccion: '',
             errorCp: '',
@@ -575,7 +576,7 @@ export default {
 
                 this.roles = response.data.roles;
 
-                this.companias = response.data.companias;
+                this.sucursales = response.data.sucursales;
 
             } catch (error) {
                 console.error('Error al obtener usuarios:', error);
@@ -648,7 +649,7 @@ export default {
                 formData.append('cp', this.cp);
                 formData.append('direccion', this.direccion);
                 formData.append('telefono', this.telefono);
-                formData.append('fk_compania', this.fk_compania);
+                formData.append('fk_sucursal', this.fk_sucursal);
 
 
                 if (this.avatar) {
@@ -712,8 +713,8 @@ export default {
                         this.errorTelefono = errors.telefono[0];
                     }
 
-                    if (errors.fk_compania) {
-                        this.errorFk_compania = errors.fk_compania[0];
+                    if (errors.fk_sucursal) {
+                        this.errorFk_sucursal = errors.fk_sucursal[0];
                     }
 
                     return;
@@ -739,7 +740,7 @@ export default {
             this.errorCp = '';
             this.errorDireccion = '';
             this.errorTelefono = '';
-            this.errorFk_compania = '';
+            this.errorFk_sucursal = '';
 
             let valido = true;
 
@@ -763,8 +764,8 @@ export default {
                 valido = false;
             }
 
-            if (!this.fk_compania) {
-                this.errorFk_compania = 'Selecciona una compañía';
+            if (!this.fk_sucursal) {
+                this.errorFk_sucursal = 'Selecciona una sucursal';
                 valido = false;
             }
 
@@ -788,7 +789,7 @@ export default {
             this.cp = '',
             this.direccion = '',
             this.telefono = '',
-            this.fk_compania = '',
+            this.fk_sucursal = '',
 
             this.errorNombre = '';
             this.errorEmail = '';
@@ -819,7 +820,7 @@ export default {
             this.errorCp = '';
             this.errorDireccion = '';
             this.errorTelefono = '';
-            this.errorFk_compania = '';
+            this.errorFk_sucursal = '';
 
             this.nombre = usuario.username;
             this.email = usuario.correo;
@@ -832,7 +833,7 @@ export default {
             this.cp = usuario.cp;
             this.direccion = usuario.direccion;
             this.telefono = usuario.telefono;
-            this.fk_compania = usuario.id_compania;
+            this.fk_sucursal = usuario.id_sucursal;
 
             this.mostrarModal = true;
 
@@ -910,7 +911,7 @@ export default {
                 formData.append('cp', this.cp);
                 formData.append('direccion', this.direccion);
                 formData.append('telefono', this.telefono);
-                formData.append('fk_compania', this.fk_compania);
+                formData.append('fk_sucursal', this.fk_sucursal);
 
                 if (this.password) {
                     formData.append('password', this.password);
@@ -970,8 +971,8 @@ export default {
                         this.errorTelefono = errors.telefono[0];
                     }
 
-                    if (errors.fk_compania) {
-                        this.errorFk_compania = errors.fk_compania[0];
+                    if (errors.fk_sucursal) {
+                        this.errorFk_sucursal = errors.fk_sucursal[0];
                     }
 
                     return;

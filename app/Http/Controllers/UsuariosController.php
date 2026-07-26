@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Companias;
+use App\Models\Sucursales;
 use App\Models\Personal;
 use App\Models\User;
 use Hash;
@@ -36,7 +36,7 @@ class UsuariosController extends Controller
             'users.estatus',
             'dpersonales.id_dpersonal',
             'dpersonales.nombre as nombre_personal',
-            'dpersonales.fk_compania as id_compania',
+            'dpersonales.fk_sucursal as id_sucursal',
             'dpersonales.cp',
             'dpersonales.direccion',
             'dpersonales.telefono'
@@ -47,12 +47,12 @@ class UsuariosController extends Controller
 
         $roles = DB::table('roles')->select('id_rol','nombre as nombre_rol')->get();
 
-        $companias = DB::table('companias')->select('id_compania','nombre as nombre_compania','email','telefono','direccion')->get();
+        $sucursales = DB::table('sucursales')->select('id_sucursal','nombre as nombre_sucursal','email','telefono','direccion')->get();
 
        return response()->json([
             'usuarios' => $usuarios,
             'roles' => $roles,
-            'companias' => $companias,
+            'sucursales' => $sucursales,
         ]);
 
     }
@@ -71,7 +71,7 @@ class UsuariosController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
             'fk_rol' => 'required|integer|exists:roles,id_rol',
-            'fk_compania' => 'required|integer',
+            'fk_sucursal' => 'required|integer',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ],[
             'nombre.unique' => 'El username ya existe, intenta con otro.',
@@ -83,7 +83,7 @@ class UsuariosController extends Controller
         $persona->cp = $validatedData['cp'];
         $persona->direccion = $validatedData['direccion'];
         $persona->telefono = $validatedData['telefono'];
-        $persona->fk_compania = $validatedData['fk_compania'];
+        $persona->fk_sucursal = $validatedData['fk_sucursal'];
         $persona->save();
 
 
@@ -141,7 +141,7 @@ class UsuariosController extends Controller
                 'password' => 'nullable|string|min:8',
                 'fk_rol' => 'required|integer|exists:roles,id_rol',
                 'estatus' => 'required|integer',
-                'fk_compania' => 'required|integer',
+                'fk_sucursal' => 'required|integer',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             ], [
                 'nombre.unique' => 'El username ya existe, intenta con otro.',
@@ -180,7 +180,7 @@ class UsuariosController extends Controller
                 $persona->cp = $validatedData['cp'];
                 $persona->direccion = $validatedData['direccion'];
                 $persona->telefono = $validatedData['telefono'];
-                $persona->fk_compania = $validatedData['fk_compania'];
+                $persona->fk_sucursal = $validatedData['fk_sucursal'];
 
                 $persona->save();
 
