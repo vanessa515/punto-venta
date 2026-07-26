@@ -40,20 +40,21 @@ const routes = [
                 path: 'sucursales',
                 component: Sucursales,
             },
+            {
+                path: '/rolespermisos',
+                component: RolesPermisos
+            },
+            {
+                path: '/marcas',
+                component: Marcas
+            },
+            {
+                path: '/productos',
+                component: Productos
+            }
         ],
     },
-    {
-        path: '/rolespermisos',
-        component: RolesPermisos
-    },
-    {
-        path: '/marcas',
-        component: Marcas
-    },
-    {
-        path: '/productos',
-        component: Productos
-    }
+
 ]
 
 const router = createRouter({

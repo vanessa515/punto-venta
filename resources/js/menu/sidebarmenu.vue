@@ -79,6 +79,20 @@ function toggleTheme() {
                 </router-link>
 
                 <router-link
+                    to="/marcas"
+                    class="menu-item"
+                >
+                    <span class="icon"><i class="fa-solid fa-bag-shopping"></i></span>
+
+                    <span
+                        v-if="sidebarOpen"
+                        class="label"
+                    >
+                        Marcas
+                    </span>
+                </router-link>
+
+                <router-link
                     to="/productos"
                     class="menu-item"
                 >

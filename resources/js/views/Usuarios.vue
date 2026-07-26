@@ -577,6 +577,7 @@ export default {
                 this.roles = response.data.roles;
 
                 this.sucursales = response.data.sucursales;
+                
 
             } catch (error) {
                 console.error('Error al obtener usuarios:', error);
